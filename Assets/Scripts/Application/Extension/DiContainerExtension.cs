@@ -10,7 +10,7 @@ namespace SignalHandler.Application.Extension
         {
             if (!container.HasBinding<SignalBus>())
             {
-                container.Bind<SignalBus>().AsCached();
+                SignalBusInstaller.Install(container);
             }
 
             container.BindInterfacesTo<SignalHandler<TSignal>>().AsCached();
@@ -21,7 +21,7 @@ namespace SignalHandler.Application.Extension
         {
             if (!container.HasBinding<SignalBus>())
             {
-                container.Bind<SignalBus>().AsCached();
+                SignalBusInstaller.Install(container);
             }
 
             container.BindInterfacesTo<SignalHandler<TSignal, TParameter>>().AsCached();
