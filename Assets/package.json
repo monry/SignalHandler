@@ -1,9 +1,9 @@
 {
   "name": "dev.monry.signalhandler",
   "displayName": "Signal Handler",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "unity": "2019.2",
-  "description": "Handle signal",
+  "description": "Provide utility class to handle signal uses Zenject.SignalBus",
   "author": {
     "name": "Tetsuya Mori",
     "url": "https://me.monry.dev/",
