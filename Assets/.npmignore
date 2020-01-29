@@ -3,4 +3,6 @@ yarn-debug.log*
 yarn-error.log*
 Plugins/
 Plugins.meta
+Tests/
+Tests.meta
 
