@@ -48,7 +48,7 @@ namespace SignalHandler
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((SignalBase<TSignal>) obj);
+            return obj.GetType() == GetType() && ((IEquatable<SignalBase<TSignal>>) this).Equals((SignalBase<TSignal>) obj);
         }
 
         public override int GetHashCode()
@@ -129,7 +129,7 @@ namespace SignalHandler
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((SignalBase<TSignal, TParameter>) obj);
+            return obj.GetType() == GetType() && ((IEquatable<SignalBase<TSignal, TParameter>>) this).Equals((SignalBase<TSignal, TParameter>) obj);
         }
 
         public override int GetHashCode()
