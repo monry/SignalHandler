@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using Zenject;
 
-namespace SignalHandler.Application.Extension
+namespace SignalHandler
 {
     [PublicAPI]
     public static class DiContainerExtension

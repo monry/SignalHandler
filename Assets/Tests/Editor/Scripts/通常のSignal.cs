@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SignalHandler.Application.Extension;
 using UniRx;
 using Zenject;
 
