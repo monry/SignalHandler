@@ -3,7 +3,7 @@
   "displayName": "Signal Handler",
   "version": "1.0.0",
   "unity": "2019.2",
-  "description": "Handle signal",
+  "description": "Provide utility class to handle signal uses Zenject.SignalBus",
   "author": {
     "name": "Tetsuya Mori",
     "url": "https://me.monry.dev/",
