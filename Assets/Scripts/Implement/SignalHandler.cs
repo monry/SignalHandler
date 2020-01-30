@@ -14,7 +14,7 @@ namespace SignalHandler
             SignalBus = signalBus;
         }
 
-        private SignalBus SignalBus { get; }
+        protected SignalBus SignalBus { get; }
 
         void ISignalPublisher<TSignal>.Publish(TSignal signal)
         {
@@ -48,29 +48,11 @@ namespace SignalHandler
     }
 
     [UsedImplicitly]
-    public class SignalHandler<TSignal, TParameter> : ISignalPublisher<TSignal, TParameter>, ISignalReceiver<TSignal, TParameter>
+    public class SignalHandler<TSignal, TParameter> : SignalHandler<TSignal>, ISignalPublisher<TSignal, TParameter>, ISignalReceiver<TSignal, TParameter>
         where TSignal : ISignal<TParameter>
     {
-        internal SignalHandler(SignalBus signalBus)
+        internal SignalHandler(SignalBus signalBus) : base(signalBus)
         {
-            SignalBus = signalBus;
-        }
-
-        private SignalBus SignalBus { get; }
-
-        void ISignalPublisher<TSignal, TParameter>.Publish(TSignal signal)
-        {
-            SignalBus.Fire(signal);
-        }
-
-        IObservable<TSignal> ISignalReceiver<TSignal, TParameter>.Receive()
-        {
-            return SignalBus.GetStream<TSignal>();
-        }
-
-        IObservable<TSignal> ISignalReceiver<TSignal, TParameter>.Receive(TSignal signal)
-        {
-            return SignalBus.GetStream<TSignal>().Where(x => x.Equals(signal));
         }
 
         IObservable<TSignal> ISignalReceiver<TSignal, TParameter>.Receive(TParameter parameter)
