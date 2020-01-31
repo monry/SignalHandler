@@ -69,21 +69,6 @@ namespace SignalHandler
         {
             return Subject.Where(x => x.Parameter.Equals(parameter));
         }
-
-        public static void InstallSignal(DiContainer container)
-        {
-            if (!container.HasBinding<SignalBus>())
-            {
-                SignalBusInstaller.Install(container);
-            }
-
-            container
-                .Bind(typeof(ISignalPublisher<TSignal, TParameter>), typeof(ISignalReceiver<TSignal, TParameter>))
-                .To<SignalHandler<TSignal, TParameter>>()
-                .AsCached();
-
-            container.DeclareSignal<TSignal>();
-        }
     }
 }
 
