@@ -9,26 +9,36 @@ namespace SignalHandler
     public class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
         where TSignal : ISignal
     {
-        internal SignalHandler(SignalBus signalBus)
+        internal SignalHandler(SignalBus signalBus, CacheType cacheType = CacheType.None)
         {
             SignalBus = signalBus;
+            Subject = cacheType.AsReplaySubject<TSignal>();
+            SignalBus.Subscribe<TSignal>(OnReceived);
         }
 
-        protected SignalBus SignalBus { get; }
+        private SignalBus SignalBus { get; }
+        protected ISubject<TSignal> Subject { get; }
 
         void ISignalPublisher<TSignal>.Publish(TSignal signal)
         {
             SignalBus.Fire(signal);
         }
 
-        IObservable<TSignal> ISignalReceiver<TSignal>.Receive()
-        {
-            return SignalBus.GetStream<TSignal>();
-        }
-
         IObservable<TSignal> ISignalReceiver<TSignal>.Receive(TSignal signal)
         {
-            return SignalBus.GetStream<TSignal>().Where(x => x.Equals(signal));
+            return Equals(signal, default) ? Subject : Subject.Where(x => x.Equals(signal));
+        }
+
+        // ReSharper disable once InvertIf
+        private void OnReceived(TSignal signal)
+        {
+            Subject.OnNext(signal);
+
+            if (signal.IsTerminator)
+            {
+                SignalBus.Unsubscribe<TSignal>(OnReceived);
+                Subject.OnCompleted();
+            }
         }
 
         public static void InstallSignal(DiContainer container)
@@ -57,7 +67,7 @@ namespace SignalHandler
 
         IObservable<TSignal> ISignalReceiver<TSignal, TParameter>.Receive(TParameter parameter)
         {
-            return SignalBus.GetStream<TSignal>().Where(x => x.Parameter.Equals(parameter));
+            return Subject.Where(x => x.Parameter.Equals(parameter));
         }
 
         public static void InstallSignal(DiContainer container)

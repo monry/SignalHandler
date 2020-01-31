@@ -2,7 +2,12 @@ using System;
 
 namespace SignalHandler
 {
-    public interface ISignal : IEquatable<ISignal>
+    public interface ISignalTerminator
+    {
+        bool IsTerminator { get; }
+    }
+
+    public interface ISignal : IEquatable<ISignal>, ISignalTerminator
     {
     }
 

@@ -4,8 +4,7 @@ namespace SignalHandler
 {
     public interface ISignalReceiver<TSignal> where TSignal : ISignal
     {
-        IObservable<TSignal> Receive();
-        IObservable<TSignal> Receive(TSignal signal);
+        IObservable<TSignal> Receive(TSignal signal = default);
     }
 
     public interface ISignalReceiver<TSignal, in TParameter> : ISignalReceiver<TSignal> where TSignal : ISignal<TParameter>
