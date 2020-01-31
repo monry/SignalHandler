@@ -28,35 +28,45 @@ namespace SignalHandler
         [Test]
         public void A_通常の送受信()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var count = 0;
+
+            Receiver.Receive().Subscribe(_ => count++);
 
             Publisher.Publish(Signal.Create());
+            Publisher.Publish(Signal.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            Assert.That(count, Is.EqualTo(2), "Signal を正しく受信しませんでした");
         }
 
         [Test]
         public void B_異なるインスタンスでも通す()
         {
+            var result = false;
+
             var signalToPublish = Signal.Create();
             var signalToReceive = Signal.Create();
 
-            Assert.False(ReferenceEquals(signalToPublish, signalToReceive));
-            Receiver.Receive(signalToReceive).Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            Receiver.Receive(signalToReceive).Subscribe(_ => result = true);
 
             Publisher.Publish(signalToPublish);
 
-            Assert.Fail("Signal を受信しませんでした");
+            Assert.That(ReferenceEquals(signalToPublish, signalToReceive), Is.False, "インスタンスが異なっていません");
+            Assert.That(result, Is.True, "Signal を受信しませんでした");
         }
 
         [Test]
         public void C_継承型は通す()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var result = false;
+
+            var extendedSignal = ExtendedSignal.Create();
+
+            Receiver.Receive().Subscribe(_ => result = true);
 
             Publisher.Publish(ExtendedSignal.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            Assert.That(extendedSignal, Is.InstanceOf<Signal>(), "ExtendedSignal が継承型ではありません");
+            Assert.That(result, Is.True, "Signal を受信しませんでした");
         }
     }
 }
