@@ -1,3 +1,5 @@
+using System;
+using NSubstitute;
 using NUnit.Framework;
 using UniRx;
 using Zenject;
@@ -39,80 +41,109 @@ namespace SignalHandler
         [Test]
         public void A_通常の送受信()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(SignalWithStructParameter.Create());
+            Publisher.Publish(SignalWithStructParameter.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received(2).OnNext(Arg.Any<SignalWithStructParameter>());
         }
 
         [Test]
         public void B_異なるインスタンスでも通す()
         {
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
             var signalForPublish = SignalWithStructParameter.Create();
             var signalForReceive = SignalWithStructParameter.Create();
 
             Assert.False(ReferenceEquals(signalForPublish, signalForReceive));
-            Receiver.Receive(signalForReceive).Subscribe(_ => Assert.Pass("Signal を受信しました"));
+
+            Receiver.Receive(signalForReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalForPublish);
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received().OnNext(signalForPublish);
         }
 
         [Test]
         public void C_継承型は通す()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(ExtendedSignalWithStructParameter.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received().OnNext(Arg.Any<SignalWithStructParameter>());
         }
 
         [Test]
         public void D_パラメータの内容が等しい場合は通す()
         {
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
             var signalForPublish = SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1));
             var signalForReceive = SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1));
 
-            Receiver.Receive(signalForReceive).Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            Receiver.Receive(signalForReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalForPublish);
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received(1).OnNext(signalForPublish);
         }
 
         [Test]
         public void E_パラメータの内容が異なる場合は通さない()
         {
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
             var signalForPublish = SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1));
             var signalForReceive = SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(false, 2));
 
-            Receiver.Receive(signalForReceive).Subscribe(_ => Assert.Fail("Signal を受信しました"));
+            Receiver.Receive(signalForReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalForPublish);
 
-            Assert.Pass("Signal を受信しませんでした");
+            mock.DidNotReceive().OnNext(signalForPublish);
         }
 
         [Test]
         public void F_送信したパラメータを受け取れる()
         {
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
             Receiver
                 .Receive()
                 .Subscribe(
                     signal =>
                     {
-                        Assert.AreEqual(true, signal.Parameter.BoolValue);
-                        Assert.AreEqual(1, signal.Parameter.IntValue);
-                        Assert.Pass("Signal を受信しました");
+                        Assert.That(signal.Parameter.BoolValue, Is.True);
+                        Assert.That(signal.Parameter.IntValue, Is.EqualTo(1));
                     }
                 );
 
             Publisher.Publish(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1)));
+            Publisher.Publish(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1)));
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received(2).OnNext(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1)));
+        }
+
+        [Test]
+        public void G_パラメータでフィルタできる()
+        {
+            var mock = Substitute.For<IObserver<SignalWithStructParameter>>();
+
+            Receiver.Receive(new SignalWithStructParameter.StructParameter(true, 1)).Subscribe(mock.OnNext);
+
+            Publisher.Publish(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1)));
+            Publisher.Publish(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(false, 2)));
+
+            mock.Received(1).OnNext(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(true, 1)));
+            mock.DidNotReceive().OnNext(SignalWithStructParameter.Create(new SignalWithStructParameter.StructParameter(false, 2)));
         }
     }
 }

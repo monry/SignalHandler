@@ -1,3 +1,5 @@
+using System;
+using NSubstitute;
 using NUnit.Framework;
 using UniRx;
 using Zenject;
@@ -17,7 +19,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            Container.DeclareSignalWithHandler<SingleSignal>().OptionalSubscriber();
+            SignalHandler<SingleSignal>.InstallSignal(Container);
 
             Container.Inject(this);
         }
@@ -25,42 +27,40 @@ namespace SignalHandler
         [Test]
         public void A_OnCompletedが即送信される()
         {
-            var called = false;
+            var mock = Substitute.For<IObserver<SingleSignal>>();
 
-            Receiver.Receive().DoOnCompleted(() => called = true).Subscribe();
+            Receiver.Receive().DoOnCompleted(mock.OnCompleted).Subscribe();
 
             Publisher.Publish(SingleSignal.Create());
 
-            Assert.That(called, Is.True, "Signal を受信しませんでした");
+            mock.Received(1).OnCompleted();
         }
 
         [Test]
         public void B_複数回送信しても初回のSignalのみが送信される()
         {
-            var count = 0;
-            var receivedSignal = default(SingleSignal);
+            var mock = Substitute.For<IObserver<SingleSignal>>();
 
-            Receiver.Receive().DoOnCompleted(() => count++).Subscribe(signal => receivedSignal = signal);
+            Receiver.Receive().DoOnCompleted(mock.OnCompleted).Subscribe(signal => Assert.That(signal.Parameter, Is.EqualTo(1)));
 
             Publisher.Publish(SingleSignal.Create(1));
             Publisher.Publish(SingleSignal.Create(2));
 
-            Assert.That(count, Is.EqualTo(1), "Signal を受信しませんでした");
-            Assert.That(receivedSignal.Parameter, Is.EqualTo(1), "2つ目の Signal を受信しています");
+            mock.Received(1).OnCompleted();
         }
 
         [Test]
         public void C_完了後には受信できない()
         {
-            var count = 0;
+            var mock = Substitute.For<IObserver<SingleSignal>>();
 
-            Receiver.Receive().Subscribe(_ => count++);
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(SingleSignal.Create());
 
-            Receiver.Receive().Subscribe(_ => count++);
+            Receiver.Receive().Subscribe(mock.OnNext);
 
-            Assert.That(count, Is.EqualTo(1), "Signal を完了後に受信しています");
+            mock.Received(1).OnNext(Arg.Any<SingleSignal>());
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SignalHandler
         }
 
         private SignalBus SignalBus { get; }
-        protected ISubject<TSignal> Subject { get; }
+        private ISubject<TSignal> Subject { get; }
 
         void ISignalPublisher<TSignal>.Publish(TSignal signal)
         {
@@ -54,20 +54,6 @@ namespace SignalHandler
                 .AsCached();
 
             container.DeclareSignal<TSignal>();
-        }
-    }
-
-    [UsedImplicitly]
-    public class SignalHandler<TSignal, TParameter> : SignalHandler<TSignal>, ISignalPublisher<TSignal, TParameter>, ISignalReceiver<TSignal, TParameter>
-        where TSignal : ISignal<TParameter>
-    {
-        internal SignalHandler(SignalBus signalBus) : base(signalBus)
-        {
-        }
-
-        IObservable<TSignal> ISignalReceiver<TSignal, TParameter>.Receive(TParameter parameter)
-        {
-            return Subject.Where(x => x.Parameter.Equals(parameter));
         }
     }
 }

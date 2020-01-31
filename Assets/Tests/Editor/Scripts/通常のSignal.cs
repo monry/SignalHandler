@@ -30,51 +30,47 @@ namespace SignalHandler
         [Test]
         public void A_通常の送受信()
         {
-            var count = 0;
-
             var mock = Substitute.For<IObserver<Signal>>();
 
             Receiver.Receive().Subscribe(mock.OnNext);
-
-            Receiver.Receive().Subscribe(_ => count++);
 
             Publisher.Publish(Signal.Create());
             Publisher.Publish(Signal.Create());
 
             mock.Received(2).OnNext(Arg.Any<Signal>());
-
-            Assert.That(count, Is.EqualTo(2), "Signal を正しく受信しませんでした");
         }
 
         [Test]
         public void B_異なるインスタンスでも通す()
         {
-            var result = false;
+            var mock = Substitute.For<IObserver<Signal>>();
 
             var signalToPublish = Signal.Create();
             var signalToReceive = Signal.Create();
 
-            Receiver.Receive(signalToReceive).Subscribe(_ => result = true);
+            Assert.That(ReferenceEquals(signalToPublish, signalToReceive), Is.False);
+
+            Receiver.Receive(signalToReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalToPublish);
 
-            Assert.That(ReferenceEquals(signalToPublish, signalToReceive), Is.False, "インスタンスが異なっていません");
-            Assert.That(result, Is.True, "Signal を受信しませんでした");
+            mock.Received().OnNext(signalToPublish);
         }
 
         [Test]
         public void C_継承型は通す()
         {
-            var result = false;
+            var mock = Substitute.For<IObserver<Signal>>();
 
             var extendedSignal = ExtendedSignal.Create();
 
-            Receiver.Receive().Subscribe(_ => result = true);
+            Assert.That(extendedSignal, Is.InstanceOf<Signal>());
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(ExtendedSignal.Create());
 
-            Assert.That(extendedSignal, Is.InstanceOf<Signal>(), "ExtendedSignal が継承型ではありません");
-            Assert.That(result, Is.True, "Signal を受信しませんでした");
+            mock.Received().OnNext(Arg.Any<Signal>());
         }
     }
 }
