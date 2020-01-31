@@ -6,7 +6,7 @@ using Zenject;
 namespace SignalHandler
 {
     [UsedImplicitly]
-    internal class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
+    public class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
         where TSignal : ISignal
     {
         internal SignalHandler(SignalBus signalBus)
@@ -30,10 +30,25 @@ namespace SignalHandler
         {
             return SignalBus.GetStream<TSignal>().Where(x => x.Equals(signal));
         }
+
+        public static void InstallSignal(DiContainer container)
+        {
+            if (!container.HasBinding<SignalBus>())
+            {
+                SignalBusInstaller.Install(container);
+            }
+
+            container
+                .Bind(typeof(ISignalPublisher<TSignal>), typeof(ISignalReceiver<TSignal>))
+                .To<SignalHandler<TSignal>>()
+                .AsCached();
+
+            container.DeclareSignal<TSignal>();
+        }
     }
 
     [UsedImplicitly]
-    internal class SignalHandler<TSignal, TParameter> : ISignalPublisher<TSignal, TParameter>, ISignalReceiver<TSignal, TParameter>
+    public class SignalHandler<TSignal, TParameter> : ISignalPublisher<TSignal, TParameter>, ISignalReceiver<TSignal, TParameter>
         where TSignal : ISignal<TParameter>
     {
         internal SignalHandler(SignalBus signalBus)
@@ -61,6 +76,21 @@ namespace SignalHandler
         IObservable<TSignal> ISignalReceiver<TSignal, TParameter>.Receive(TParameter parameter)
         {
             return SignalBus.GetStream<TSignal>().Where(x => x.Parameter.Equals(parameter));
+        }
+
+        public static void InstallSignal(DiContainer container)
+        {
+            if (!container.HasBinding<SignalBus>())
+            {
+                SignalBusInstaller.Install(container);
+            }
+
+            container
+                .Bind(typeof(ISignalPublisher<TSignal, TParameter>), typeof(ISignalReceiver<TSignal, TParameter>))
+                .To<SignalHandler<TSignal, TParameter>>()
+                .AsCached();
+
+            container.DeclareSignal<TSignal>();
         }
     }
 }
