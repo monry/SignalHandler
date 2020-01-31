@@ -20,7 +20,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            Container.DeclareSignalWithHandler<Signal>().OptionalSubscriber();
+            SignalHandler<Signal>.InstallSignal(Container);
 
             Container.Inject(this);
         }

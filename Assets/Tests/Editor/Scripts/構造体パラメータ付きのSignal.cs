@@ -31,8 +31,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            Container.DeclareSignalWithHandler<SignalWithStructParameter>().OptionalSubscriber();
-            Container.DeclareSignalWithHandler<SignalWithClassParameter>().OptionalSubscriber();
+            SignalHandler<SignalWithStructParameter>.InstallSignal(Container);
 
             Container.Inject(this);
         }

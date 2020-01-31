@@ -20,8 +20,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            Container.DeclareSignalWithHandler<SignalWithValueTupleParameter>().OptionalSubscriber();
-            Container.DeclareSignalWithHandler<SignalWithClassParameter>().OptionalSubscriber();
+            SignalHandler<SignalWithValueTupleParameter>.InstallSignal(Container);
 
             Container.Inject(this);
         }
