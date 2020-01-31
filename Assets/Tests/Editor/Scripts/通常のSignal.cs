@@ -1,3 +1,5 @@
+using System;
+using NSubstitute;
 using NUnit.Framework;
 using UniRx;
 using Zenject;
@@ -30,10 +32,16 @@ namespace SignalHandler
         {
             var count = 0;
 
+            var mock = Substitute.For<IObserver<Signal>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
+
             Receiver.Receive().Subscribe(_ => count++);
 
             Publisher.Publish(Signal.Create());
             Publisher.Publish(Signal.Create());
+
+            mock.Received(2).OnNext(Arg.Any<Signal>());
 
             Assert.That(count, Is.EqualTo(2), "Signal を正しく受信しませんでした");
         }
