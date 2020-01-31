@@ -4,9 +4,5 @@
     {
         void Publish(TSignal signal);
     }
-
-    public interface ISignalPublisher<in TSignal, in TParameter> : ISignalPublisher<TSignal> where TSignal : ISignal<TParameter>
-    {
-    }
 }
 

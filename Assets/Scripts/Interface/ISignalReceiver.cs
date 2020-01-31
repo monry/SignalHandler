@@ -1,4 +1,5 @@
 using System;
+using UniRx;
 
 namespace SignalHandler
 {
@@ -7,8 +8,12 @@ namespace SignalHandler
         IObservable<TSignal> Receive(TSignal signal = default);
     }
 
-    public interface ISignalReceiver<TSignal, in TParameter> : ISignalReceiver<TSignal> where TSignal : ISignal<TParameter>
+    public static class SignalReceiverExtension
     {
-        IObservable<TSignal> Receive(TParameter parameter);
+        public static IObservable<TSignal> Receive<TSignal, TParameter>(this ISignalReceiver<TSignal> signalReceiver, TParameter parameter)
+            where TSignal : ISignal<TParameter>
+        {
+            return signalReceiver.Receive().Where(signal => Equals(signal.Parameter, parameter));
+        }
     }
 }
