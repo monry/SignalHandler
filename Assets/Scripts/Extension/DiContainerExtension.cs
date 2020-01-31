@@ -13,7 +13,10 @@ namespace SignalHandler
                 SignalBusInstaller.Install(container);
             }
 
-            container.BindInterfacesTo<SignalHandler<TSignal>>().AsCached();
+            container
+                .Bind(typeof(ISignalPublisher<TSignal>), typeof(ISignalReceiver<TSignal>))
+                .To<SignalHandler<TSignal>>()
+                .AsCached();
             return container.DeclareSignal<TSignal>();
         }
 
@@ -24,7 +27,10 @@ namespace SignalHandler
                 SignalBusInstaller.Install(container);
             }
 
-            container.BindInterfacesTo<SignalHandler<TSignal, TParameter>>().AsCached();
+            container
+                .Bind(typeof(ISignalPublisher<TSignal>), typeof(ISignalReceiver<TSignal>))
+                .To<SignalHandler<TSignal>>()
+                .AsCached();
             return container.DeclareSignal<TSignal>();
         }
     }
