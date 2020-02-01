@@ -19,7 +19,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<SingleSignal>.InstallSignal(Container);
+            SignalHandlerInstaller<SingleSignal>.Install(Container);
 
             Container.Inject(this);
         }
