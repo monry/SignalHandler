@@ -58,8 +58,8 @@ public class SomeInstaller : MonoInstaller<SomeInstaller>
 {
     public override void InstallBindings()
     {
-        Container.DeclareSignalWithHandler<FooSignal>();
-        Container.DeclareSignalWithHandler<BarSignal, SomeParameter>();
+        SignalHandlerInstaller<FooSignal>.Install(Container);
+        SignalHandlerInstaller<BarSignal>.Install(Container);
     }
 }
 ```
@@ -74,7 +74,7 @@ using UnityEngine;
 public class MyPublisherMonoBehaviour : MonoBehaviour
 {
     [Inject] private ISignalPublisher<FooSignal> FooPublisher { get; }
-    [Inject] private ISignalPublisher<BarSignal, SomeParameter> BarPublisher { get; }
+    [Inject] private ISignalPublisher<BarSignal> BarPublisher { get; }
 
     public IEnumerator Start()
     {
@@ -97,7 +97,7 @@ using UniRx;
 public class MyReceiverMonoBehaviour : MonoBehaviour
 {
     [Inject] private ISignalReceiver<FooSignal> FooReceiver { get; }
-    [Inject] private ISignalReceiver<BarSignal, SomeParameter> BarReceiver { get; }
+    [Inject] private ISignalReceiver<BarSignal> BarReceiver { get; }
 
     public void Start()
     {

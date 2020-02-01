@@ -16,7 +16,8 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Zenject-usage.dll",
-        "Zenject-TestFramework.dll"
+        "Zenject-TestFramework.dll",
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

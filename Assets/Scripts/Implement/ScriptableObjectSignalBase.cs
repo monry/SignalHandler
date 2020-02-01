@@ -15,6 +15,8 @@ namespace SignalHandler
             return CreateInstance<TSignal>();
         }
 
+        bool ISignalTerminator.IsTerminator => false;
+
         private string Name { get; } = typeof(TSignal).FullName;
 
         bool IEquatable<ScriptableObjectSignalBase<TSignal>>.Equals(ScriptableObjectSignalBase<TSignal> other)

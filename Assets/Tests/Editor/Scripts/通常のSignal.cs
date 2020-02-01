@@ -1,3 +1,5 @@
+using System;
+using NSubstitute;
 using NUnit.Framework;
 using UniRx;
 using Zenject;
@@ -20,7 +22,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<Signal>.InstallSignal(Container);
+            SignalHandlerInstaller<Signal>.Install(Container);
 
             Container.Inject(this);
         }
@@ -28,35 +30,47 @@ namespace SignalHandler
         [Test]
         public void A_通常の送受信()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var mock = Substitute.For<IObserver<Signal>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(Signal.Create());
+            Publisher.Publish(Signal.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received(2).OnNext(Arg.Any<Signal>());
         }
 
         [Test]
         public void B_異なるインスタンスでも通す()
         {
+            var mock = Substitute.For<IObserver<Signal>>();
+
             var signalToPublish = Signal.Create();
             var signalToReceive = Signal.Create();
 
-            Assert.False(ReferenceEquals(signalToPublish, signalToReceive));
-            Receiver.Receive(signalToReceive).Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            Assert.That(ReferenceEquals(signalToPublish, signalToReceive), Is.False);
+
+            Receiver.Receive(signalToReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalToPublish);
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received().OnNext(signalToPublish);
         }
 
         [Test]
         public void C_継承型は通す()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var mock = Substitute.For<IObserver<Signal>>();
+
+            var extendedSignal = ExtendedSignal.Create();
+
+            Assert.That(extendedSignal, Is.InstanceOf<Signal>());
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(ExtendedSignal.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received().OnNext(Arg.Any<Signal>());
         }
     }
 }

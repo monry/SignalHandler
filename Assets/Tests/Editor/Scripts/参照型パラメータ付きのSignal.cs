@@ -1,3 +1,5 @@
+using System;
+using NSubstitute;
 using NUnit.Framework;
 using UniRx;
 using Zenject;
@@ -31,7 +33,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<SignalWithClassParameter>.InstallSignal(Container);
+            SignalHandlerInstaller<SignalWithClassParameter>.Install(Container);
 
             Container.Inject(this);
         }
@@ -39,84 +41,114 @@ namespace SignalHandler
         [Test]
         public void A_通常の送受信()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(SignalWithClassParameter.Create());
+            Publisher.Publish(SignalWithClassParameter.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received(2).OnNext(Arg.Any<SignalWithClassParameter>());
         }
 
         [Test]
         public void B_異なるインスタンスでも通す()
         {
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
+
             var signalForPublish = SignalWithClassParameter.Create();
             var signalForReceive = SignalWithClassParameter.Create();
 
             Assert.False(ReferenceEquals(signalForPublish, signalForReceive));
-            Receiver.Receive(signalForReceive).Subscribe(_ => Assert.Pass("Signal を受信しました"));
+
+            Receiver.Receive(signalForReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalForPublish);
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received().OnNext(signalForPublish);
         }
 
         [Test]
         public void C_継承型は通す()
         {
-            Receiver.Receive().Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
+
+            Receiver.Receive().Subscribe(mock.OnNext);
 
             Publisher.Publish(ExtendedSignalWithClassParameter.Create());
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received().OnNext(Arg.Any<SignalWithClassParameter>());
         }
 
         [Test]
-        public void D_パラメータの参照が等しい場合は通す()
+        public void D_パラメータの内容が等しくても参照が異なる場合は通さない()
         {
-            var classParameter = new SignalWithClassParameter.ClassParameter(true, 1);
-            var signalForPublish = SignalWithClassParameter.Create(classParameter);
-            var signalForReceive = SignalWithClassParameter.Create(classParameter);
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
 
-            Receiver.Receive(signalForReceive).Subscribe(_ => Assert.Pass("Signal を受信しました"));
+            var signalForPublish = SignalWithClassParameter.Create(new SignalWithClassParameter.ClassParameter(true, 1));
+            var signalForReceive = SignalWithClassParameter.Create(new SignalWithClassParameter.ClassParameter(true, 1));
+
+            Receiver.Receive(signalForReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalForPublish);
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.DidNotReceive().OnNext(signalForPublish);
         }
 
         [Test]
-        public void E_パラメータの参照が異なる場合は通さない()
+        public void E_パラメータの内容が異なる場合は通さない()
         {
-            var classParameterForPublish = new SignalWithClassParameter.ClassParameter(true, 1);
-            var classParameterForReceive = new SignalWithClassParameter.ClassParameter(true, 1);
-            var signalForPublish = SignalWithClassParameter.Create(classParameterForPublish);
-            var signalForReceive = SignalWithClassParameter.Create(classParameterForReceive);
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
 
-            Assert.False(ReferenceEquals(classParameterForPublish, classParameterForReceive));
-            Receiver.Receive(signalForReceive).Subscribe(_ => Assert.Fail("Signal を受信しました"));
+            var signalForPublish = SignalWithClassParameter.Create(new SignalWithClassParameter.ClassParameter(true, 1));
+            var signalForReceive = SignalWithClassParameter.Create(new SignalWithClassParameter.ClassParameter(false, 2));
+
+            Receiver.Receive(signalForReceive).Subscribe(mock.OnNext);
 
             Publisher.Publish(signalForPublish);
 
-            Assert.Pass("Signal を受信しませんでした");
+            mock.DidNotReceive().OnNext(signalForPublish);
         }
 
         [Test]
         public void F_送信したパラメータを受け取れる()
         {
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
+
+            var parameter = new SignalWithClassParameter.ClassParameter(true, 1);
+
+            Receiver.Receive().Subscribe(mock.OnNext);
             Receiver
                 .Receive()
                 .Subscribe(
                     signal =>
                     {
-                        Assert.AreEqual(true, signal.Parameter.BoolValue);
-                        Assert.AreEqual(1, signal.Parameter.IntValue);
-                        Assert.Pass("Signal を受信しました");
+                        Assert.That(signal.Parameter.BoolValue, Is.True);
+                        Assert.That(signal.Parameter.IntValue, Is.EqualTo(1));
                     }
                 );
 
-            Publisher.Publish(SignalWithClassParameter.Create(new SignalWithClassParameter.ClassParameter(true, 1)));
+            Publisher.Publish(SignalWithClassParameter.Create(parameter));
+            Publisher.Publish(SignalWithClassParameter.Create(parameter));
 
-            Assert.Fail("Signal を受信しませんでした");
+            mock.Received(2).OnNext(SignalWithClassParameter.Create(parameter));
+        }
+
+        [Test]
+        public void G_パラメータでフィルタできる()
+        {
+            var mock = Substitute.For<IObserver<SignalWithClassParameter>>();
+
+            var parameterPublishable = new SignalWithClassParameter.ClassParameter(true, 1);
+            var parameterUnpublishable = new SignalWithClassParameter.ClassParameter(true, 1);
+
+            Receiver.Receive(parameterPublishable).Subscribe(mock.OnNext);
+
+            Publisher.Publish(SignalWithClassParameter.Create(parameterPublishable));
+            Publisher.Publish(SignalWithClassParameter.Create(parameterUnpublishable));
+
+            mock.Received(1).OnNext(SignalWithClassParameter.Create(parameterPublishable));
+            mock.DidNotReceive().OnNext(SignalWithClassParameter.Create(parameterUnpublishable));
         }
     }
 }
