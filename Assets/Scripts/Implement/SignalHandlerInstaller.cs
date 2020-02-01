@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using Zenject;
 
 namespace SignalHandler
@@ -70,6 +72,26 @@ namespace SignalHandler
             {
                 var _ = new SignalHandler<TSignal>(default);
             }
+        }
+    }
+
+    internal static class SignalDeclarationStore
+    {
+        private static IDictionary<DiContainer, IList<Type>> DeclarationMap { get; } = new Dictionary<DiContainer, IList<Type>>();
+
+        internal static bool HasDeclaration<TSignal>(DiContainer container)
+        {
+            return DeclarationMap.ContainsKey(container) && DeclarationMap[container].Contains(typeof(TSignal));
+        }
+
+        internal static void AddDeclaration<TSignal>(DiContainer container)
+        {
+            if (!DeclarationMap.ContainsKey(container))
+            {
+                DeclarationMap[container] = new List<Type>();
+            }
+
+            DeclarationMap[container].Add(typeof(TSignal));
         }
     }
 }
