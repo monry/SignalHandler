@@ -2,11 +2,38 @@
 
 ## Installation
 
+### Use Command Line
+
 ```bash
 upm add package dev.monry.signalhandler
 ```
 
 Note: `upm` command is provided by [this repository](https://github.com/upm-packages/upm-cli).
+
+### Edit `Packages/manifest.json`
+
+```javascript
+{
+  "dependencies": {
+    // ...
+    "dev.monry.signalhandler": "[latest version]", 
+    // ...
+  },
+  "scopedRegistries": [
+    {
+      "name": "Unofficial Unity Package Manager Registry",
+      "url": "https://upm-packages.dev",
+      "scopes": [
+        "com.unity.simpleanimation",
+        "com.stevevermeulen",
+        "jp.cysharp",
+        "dev.monry",
+        "dev.upm-packages"
+      ]
+    }
+  ]
+}
+```
 
 ## Usages
 
