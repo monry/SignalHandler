@@ -60,7 +60,7 @@ namespace SignalHandler
         private static void AOTWorkaround()
         {
             {
-                var _ = new SignalHandler<TSignal>(null);
+                var _ = new SignalHandler<TSignal>(default);
             }
         }
     }
