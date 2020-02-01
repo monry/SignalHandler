@@ -22,7 +22,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<Signal>.InstallSignal(Container);
+            SignalHandlerInstaller<Signal>.Install(Container);
 
             Container.Inject(this);
         }

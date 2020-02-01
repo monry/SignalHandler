@@ -21,7 +21,7 @@ namespace SignalHandler
         public void Install()
         {
             // ReSharper disable once RedundantArgumentDefaultValue 書き味を揃えるためにデフォルト引数を明示
-            SignalHandler<WarnSignal>.InstallSignal(Container, signalMissingHandlerResponses: SignalMissingHandlerResponses.Warn);
+            SignalHandlerInstaller<WarnSignal>.Install(Container, signalMissingHandlerResponses: SignalMissingHandlerResponses.Warn);
 
             // 無理矢理 UnityEngine.Debug が用いる Logger を上書き
             typeof(Debug).GetField("s_Logger", BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, MockLogger);

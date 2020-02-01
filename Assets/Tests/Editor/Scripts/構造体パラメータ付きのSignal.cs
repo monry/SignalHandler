@@ -33,7 +33,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<SignalWithStructParameter>.InstallSignal(Container);
+            SignalHandlerInstaller<SignalWithStructParameter>.Install(Container);
 
             Container.Inject(this);
         }

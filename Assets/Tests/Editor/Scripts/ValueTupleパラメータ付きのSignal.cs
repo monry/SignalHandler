@@ -22,7 +22,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<SignalWithValueTupleParameter>.InstallSignal(Container);
+            SignalHandlerInstaller<SignalWithValueTupleParameter>.Install(Container);
 
             Container.Inject(this);
         }

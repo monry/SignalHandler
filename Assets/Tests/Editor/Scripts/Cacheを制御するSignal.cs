@@ -23,9 +23,9 @@ namespace SignalHandler
         public void Install()
         {
             // ReSharper disable once RedundantArgumentDefaultValue 書き味を揃えるためにデフォルト引数を明示
-            SignalHandler<CacheSignal>.InstallSignal(Container, CacheType.None, CacheType.None);
-            SignalHandler<CacheSignal>.InstallSignal(Container, CacheType.Latest, CacheType.Latest);
-            SignalHandler<CacheSignal>.InstallSignal(Container, CacheType.All, CacheType.All);
+            SignalHandlerInstaller<CacheSignal>.Install(Container, CacheType.None, CacheType.None);
+            SignalHandlerInstaller<CacheSignal>.Install(Container, CacheType.Latest, CacheType.Latest);
+            SignalHandlerInstaller<CacheSignal>.Install(Container, CacheType.All, CacheType.All);
 
             Container.Inject(this);
         }

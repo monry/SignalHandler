@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx;
 using Zenject;
@@ -7,7 +6,7 @@ using Zenject;
 namespace SignalHandler
 {
     [UsedImplicitly]
-    public class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
+    internal class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
         where TSignal : ISignal
     {
         internal SignalHandler(SignalBus signalBus, CacheType cacheType = CacheType.None)
@@ -40,75 +39,6 @@ namespace SignalHandler
                 SignalBus.Unsubscribe<TSignal>(OnReceived);
                 Subject.OnCompleted();
             }
-        }
-
-        public static void InstallSignal(DiContainer container, object identifier = default, CacheType cacheType = CacheType.None, SignalMissingHandlerResponses signalMissingHandlerResponses = SignalMissingHandlerResponses.Warn)
-        {
-            if (!container.HasBinding<SignalBus>())
-            {
-                SignalBusInstaller.Install(container);
-            }
-
-            ConcreteBinderNonGeneric CreateBinder()
-            {
-                var binder = container.Bind(typeof(ISignalPublisher<TSignal>), typeof(ISignalReceiver<TSignal>));
-                return identifier == default ? binder : binder.WithId(identifier);
-            }
-
-            CreateBinder()
-                .To<SignalHandler<TSignal>>()
-                .AsCached()
-                .WithArguments(cacheType)
-            ;
-
-            // ReSharper disable once InvertIf
-            if (!SignalDeclarationStore.HasDeclaration<TSignal>(container))
-            {
-                var declaredSignal = container.DeclareSignal<TSignal>();
-                switch (signalMissingHandlerResponses)
-                {
-                    case SignalMissingHandlerResponses.Ignore:
-                        declaredSignal.OptionalSubscriber();
-                        break;
-                    case SignalMissingHandlerResponses.Throw:
-                        declaredSignal.RequireSubscriber();
-                        break;
-                    case SignalMissingHandlerResponses.Warn:
-                        declaredSignal.OptionalSubscriberWithWarning();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(signalMissingHandlerResponses), signalMissingHandlerResponses, null);
-                }
-                SignalDeclarationStore.AddDeclaration<TSignal>(container);
-            }
-        }
-
-        // ReSharper disable once UnusedMember.Local Avoid constructor stripping by IL2CPP
-        private static void AOTWorkaround()
-        {
-            {
-                var _ = new SignalHandler<TSignal>(default);
-            }
-        }
-    }
-
-    internal static class SignalDeclarationStore
-    {
-        private static IDictionary<DiContainer, IList<Type>> DeclarationMap { get; } = new Dictionary<DiContainer, IList<Type>>();
-
-        internal static bool HasDeclaration<TSignal>(DiContainer container)
-        {
-            return DeclarationMap.ContainsKey(container) && DeclarationMap[container].Contains(typeof(TSignal));
-        }
-
-        internal static void AddDeclaration<TSignal>(DiContainer container)
-        {
-            if (!DeclarationMap.ContainsKey(container))
-            {
-                DeclarationMap[container] = new List<Type>();
-            }
-
-            DeclarationMap[container].Add(typeof(TSignal));
         }
     }
 }

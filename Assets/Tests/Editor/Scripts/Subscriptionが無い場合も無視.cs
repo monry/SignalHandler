@@ -20,7 +20,7 @@ namespace SignalHandler
         [SetUp]
         public void Install()
         {
-            SignalHandler<IgnoreSignal>.InstallSignal(Container, signalMissingHandlerResponses: SignalMissingHandlerResponses.Ignore);
+            SignalHandlerInstaller<IgnoreSignal>.Install(Container, signalMissingHandlerResponses: SignalMissingHandlerResponses.Ignore);
 
             // 無理矢理 UnityEngine.Debug が用いる Logger を上書き
             typeof(Debug).GetField("s_Logger", BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, MockLogger);
