@@ -5,6 +5,7 @@ using Zenject;
 
 namespace SignalHandler
 {
+    [UsedImplicitly]
     public class SignalHandlerInstaller<TSignal> : Installer<object, CacheType, SignalMissingHandlerResponses, SignalHandlerInstaller<TSignal>>
         where TSignal : ISignal
     {
