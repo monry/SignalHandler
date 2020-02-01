@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx;
 using Zenject;
@@ -41,19 +42,30 @@ namespace SignalHandler
             }
         }
 
-        public static void InstallSignal(DiContainer container)
+        public static void InstallSignal(DiContainer container, object identifier = default, CacheType cacheType = CacheType.None)
         {
             if (!container.HasBinding<SignalBus>())
             {
                 SignalBusInstaller.Install(container);
             }
 
-            container
-                .Bind(typeof(ISignalPublisher<TSignal>), typeof(ISignalReceiver<TSignal>))
-                .To<SignalHandler<TSignal>>()
-                .AsCached();
+            ConcreteBinderNonGeneric CreateBinder()
+            {
+                var binder = container.Bind(typeof(ISignalPublisher<TSignal>), typeof(ISignalReceiver<TSignal>));
+                return identifier == default ? binder : binder.WithId(identifier);
+            }
 
-            container.DeclareSignal<TSignal>();
+            CreateBinder()
+                .To<SignalHandler<TSignal>>()
+                .AsCached()
+                .WithArguments(cacheType)
+            ;
+
+            if (!SignalDeclarationStore.HasDeclaration<TSignal>(container))
+            {
+                container.DeclareSignal<TSignal>();
+                SignalDeclarationStore.AddDeclaration<TSignal>(container);
+            }
         }
 
         // ReSharper disable once UnusedMember.Local Avoid constructor stripping by IL2CPP
@@ -62,6 +74,26 @@ namespace SignalHandler
             {
                 var _ = new SignalHandler<TSignal>(default);
             }
+        }
+    }
+
+    internal static class SignalDeclarationStore
+    {
+        private static IDictionary<DiContainer, IList<Type>> DeclarationMap { get; } = new Dictionary<DiContainer, IList<Type>>();
+
+        internal static bool HasDeclaration<TSignal>(DiContainer container)
+        {
+            return DeclarationMap.ContainsKey(container) && DeclarationMap[container].Contains(typeof(TSignal));
+        }
+
+        internal static void AddDeclaration<TSignal>(DiContainer container)
+        {
+            if (!DeclarationMap.ContainsKey(container))
+            {
+                DeclarationMap[container] = new List<Type>();
+            }
+
+            DeclarationMap[container].Add(typeof(TSignal));
         }
     }
 }
