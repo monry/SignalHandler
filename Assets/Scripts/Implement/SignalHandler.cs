@@ -42,7 +42,7 @@ namespace SignalHandler
             }
         }
 
-        public static void InstallSignal(DiContainer container, object identifier = default, CacheType cacheType = CacheType.None)
+        public static void InstallSignal(DiContainer container, object identifier = default, CacheType cacheType = CacheType.None, SignalMissingHandlerResponses signalMissingHandlerResponses = SignalMissingHandlerResponses.Warn)
         {
             if (!container.HasBinding<SignalBus>())
             {
@@ -61,9 +61,24 @@ namespace SignalHandler
                 .WithArguments(cacheType)
             ;
 
+            // ReSharper disable once InvertIf
             if (!SignalDeclarationStore.HasDeclaration<TSignal>(container))
             {
-                container.DeclareSignal<TSignal>();
+                var declaredSignal = container.DeclareSignal<TSignal>();
+                switch (signalMissingHandlerResponses)
+                {
+                    case SignalMissingHandlerResponses.Ignore:
+                        declaredSignal.OptionalSubscriber();
+                        break;
+                    case SignalMissingHandlerResponses.Throw:
+                        declaredSignal.RequireSubscriber();
+                        break;
+                    case SignalMissingHandlerResponses.Warn:
+                        declaredSignal.OptionalSubscriberWithWarning();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(signalMissingHandlerResponses), signalMissingHandlerResponses, null);
+                }
                 SignalDeclarationStore.AddDeclaration<TSignal>(container);
             }
         }
