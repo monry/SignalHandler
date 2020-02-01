@@ -55,6 +55,14 @@ namespace SignalHandler
 
             container.DeclareSignal<TSignal>();
         }
+
+        // ReSharper disable once UnusedMember.Local Avoid constructor stripping by IL2CPP
+        private static void AOTWorkaround()
+        {
+            {
+                var _ = new SignalHandler<TSignal>(default);
+            }
+        }
     }
 }
 
