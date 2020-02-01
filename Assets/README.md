@@ -58,8 +58,8 @@ public class SomeInstaller : MonoInstaller<SomeInstaller>
 {
     public override void InstallBindings()
     {
-        SignalHandler<FooSignal>.InstallSignal();
-        SignalHandler<BarSignal>.InstallSignal();
+        SignalHandlerInstaller<FooSignal>.Install(Container);
+        SignalHandlerInstaller<BarSignal>.Install(Container);
     }
 }
 ```
