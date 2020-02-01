@@ -159,3 +159,5 @@ public class SomeInstaller : MonoInstaller<SomeInstaller>
 ```
 
 This will generate cpp code for the SignalHandler class that uses the FooSignal and BarSignal types as type arguments.
+
+This method does not need to be actually invoked.
