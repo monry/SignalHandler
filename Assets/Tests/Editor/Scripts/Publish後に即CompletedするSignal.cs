@@ -44,6 +44,7 @@ namespace SignalHandler
             Receiver.Receive().DoOnCompleted(mock.OnCompleted).Subscribe(signal => Assert.That(signal.Parameter, Is.EqualTo(1)));
 
             Publisher.Publish(SingleSignal.Create(1));
+            // ココで Subscription がないという警告が出る
             Publisher.Publish(SingleSignal.Create(2));
 
             mock.Received(1).OnCompleted();
