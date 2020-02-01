@@ -66,14 +66,6 @@ namespace SignalHandler
         {
             Installer<object, CacheType, SignalMissingHandlerResponses, SignalHandlerInstaller<TSignal>>.Install(container, identifier, cacheType, signalMissingHandlerResponses);
         }
-
-        // ReSharper disable once UnusedMember.Local Avoid constructor stripping by IL2CPP
-        private static void AOTWorkaround()
-        {
-            {
-                var _ = new SignalHandler<TSignal>(default);
-            }
-        }
     }
 
     internal static class SignalDeclarationStore
