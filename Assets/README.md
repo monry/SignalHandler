@@ -12,12 +12,12 @@ Note: `upm` command is provided by [this repository](https://github.com/upm-pack
 
 ### Edit `Packages/manifest.json`
 
-```javascript
+```jsonc
 {
   "dependencies": {
-    // ...
+    // (snip)
     "dev.monry.signalhandler": "[latest version]", 
-    // ...
+    // (snip)
   },
   "scopedRegistries": [
     {
