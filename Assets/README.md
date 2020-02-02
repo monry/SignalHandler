@@ -180,6 +180,8 @@ public class SomeInstaller : MonoInstaller<SomeInstaller>
         {
             new SignalHandler<FooSignal>(default),
             new SignalHandler<BarSignal>(default),
+            new SignalHandlerInstaller<FooSignal>(default, default, default),
+            new SignalHandlerInstaller<BarSignal>(default, default, default),
         };
     }
 }
