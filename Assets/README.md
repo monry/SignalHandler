@@ -155,38 +155,3 @@ public class MyReceiverMonoBehaviour : MonoBehaviour
 }
 ```
 
-## How to work on AOT platform (IL2CPP compiler support)
-
-Add the following code to avoid code stripping by IL2CPP
-
-(In the example, it is added to Installer)
-
-```csharp
-using Zenject;
-using SignalHandler; // provides extension methods
-
-public class SomeInstaller : MonoInstaller<SomeInstaller>
-{
-    public override void InstallBindings()
-    {
-        SignalHandlerInstaller<FooSignal>.Install(Container);
-        SignalHandlerInstaller<BarSignal>.Install(Container);
-    }
-
-    // ReSharper disable once UnusedMember.Local
-    private static void PreserveTypes()
-    {
-        object[] _ =
-        {
-            new SignalHandler<FooSignal>(default),
-            new SignalHandler<BarSignal>(default),
-            new SignalHandlerInstaller<FooSignal>(default, default, default),
-            new SignalHandlerInstaller<BarSignal>(default, default, default),
-        };
-    }
-}
-```
-
-This will generate cpp code for the SignalHandler class that uses the FooSignal and BarSignal types as type arguments.
-
-This method does not need to be actually invoked.

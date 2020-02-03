@@ -6,10 +6,11 @@ using Zenject;
 namespace SignalHandler
 {
     [UsedImplicitly]
-    public class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
-        where TSignal : ISignal
+    internal class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
+        where TSignal : class, ISignal
     {
-        public SignalHandler(SignalBus signalBus, CacheType cacheType = CacheType.None)
+        [Inject]
+        internal SignalHandler(SignalBus signalBus, CacheType cacheType = CacheType.None)
         {
             SignalBus = signalBus;
             Subject = cacheType.AsReplaySubject<TSignal>();
