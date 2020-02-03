@@ -7,7 +7,7 @@ namespace SignalHandler
 {
     [UsedImplicitly]
     public class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
-        where TSignal : ISignal
+        where TSignal : class, ISignal
     {
         [Inject]
         public SignalHandler(SignalBus signalBus, CacheType cacheType = CacheType.None)
