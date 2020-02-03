@@ -9,6 +9,7 @@ namespace SignalHandler
     public class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>
         where TSignal : ISignal
     {
+        [Inject]
         public SignalHandler(SignalBus signalBus, CacheType cacheType = CacheType.None)
         {
             SignalBus = signalBus;

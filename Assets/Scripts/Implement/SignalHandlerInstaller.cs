@@ -9,6 +9,7 @@ namespace SignalHandler
     public class SignalHandlerInstaller<TSignal> : Installer<object, CacheType, SignalMissingHandlerResponses, SignalHandlerInstaller<TSignal>>
         where TSignal : ISignal
     {
+        [Inject]
         public SignalHandlerInstaller(object identifier, CacheType cacheType, SignalMissingHandlerResponses signalMissingHandlerResponses)
         {
             Identifier = identifier;
