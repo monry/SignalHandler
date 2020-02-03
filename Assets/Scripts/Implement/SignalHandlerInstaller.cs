@@ -10,7 +10,7 @@ namespace SignalHandler
         where TSignal : class, ISignal
     {
         [Inject]
-        public SignalHandlerInstaller(object identifier, CacheType cacheType, SignalMissingHandlerResponses signalMissingHandlerResponses)
+        internal SignalHandlerInstaller(object identifier, CacheType cacheType, SignalMissingHandlerResponses signalMissingHandlerResponses)
         {
             Identifier = identifier;
             CacheType = cacheType;
