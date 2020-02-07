@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Interface
 {
     [PublicAPI]
     public interface ISignalTerminator

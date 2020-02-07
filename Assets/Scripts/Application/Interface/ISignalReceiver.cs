@@ -2,7 +2,7 @@ using System;
 using JetBrains.Annotations;
 using UniRx;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Interface
 {
     [PublicAPI]
     public interface ISignalReceiver<TSignal> where TSignal : ISignal

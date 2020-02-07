@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using SignalHandler.Application.Interface;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Signal
 {
     [UsedImplicitly]
     public abstract class SignalBase<TSignal> : ISignal, IEquatable<SignalBase<TSignal>>

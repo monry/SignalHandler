@@ -1,7 +1,7 @@
 using System;
 using UniRx;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Master
 {
     public enum CacheType
     {

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using SignalHandler.Application.Interface;
 using UnityEngine;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Signal
 {
     [UsedImplicitly]
     public abstract class ScriptableObjectSignalBase<TSignal> : ScriptableObject, ISignal, IEquatable<ScriptableObjectSignalBase<TSignal>>
