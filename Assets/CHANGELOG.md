@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] - 2020-02-07
+
+### Changes
+
+* Follow CAFU v3.1 rules
+
 ## [1.1.3] - 2020-02-03
 
 ### Fixes
