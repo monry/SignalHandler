@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using SignalHandler.Domain.Implement.UseCase;
 using JetBrains.Annotations;
+using SignalHandler.Application.Interface;
+using SignalHandler.Application.Master;
 using Zenject;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Installer
 {
     [UsedImplicitly]
     public class SignalHandlerInstaller<TSignal> : Installer<object, CacheType, SignalMissingHandlerResponses, SignalHandlerInstaller<TSignal>>

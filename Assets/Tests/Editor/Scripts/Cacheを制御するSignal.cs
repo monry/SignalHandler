@@ -1,4 +1,8 @@
 using System;
+using SignalHandler.Application.Installer;
+using SignalHandler.Application.Interface;
+using SignalHandler.Application.Master;
+using SignalHandler.Application.Signal;
 using NSubstitute;
 using NUnit.Framework;
 using Zenject;

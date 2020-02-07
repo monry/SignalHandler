@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace SignalHandler
+namespace SignalHandler.Application.Interface
 {
     [PublicAPI]
     public interface ISignalPublisher<in TSignal> where TSignal : ISignal
