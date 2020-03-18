@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0] - 2020-03-18
+
+Flatten namespaces
+
+### Changes
+
+* Flatten namespaces for using simply
+
 ## [1.2.0] - 2020-02-07
 
 ### Changes
