@@ -1,11 +1,9 @@
 ﻿using System;
-using SignalHandler.Application.Interface;
-using SignalHandler.Application.Master;
 using JetBrains.Annotations;
 using UniRx;
 using Zenject;
 
-namespace SignalHandler.Domain.Implement.UseCase
+namespace SignalHandler.UseCase
 {
     [UsedImplicitly]
     internal class SignalHandler<TSignal> : ISignalPublisher<TSignal>, ISignalReceiver<TSignal>

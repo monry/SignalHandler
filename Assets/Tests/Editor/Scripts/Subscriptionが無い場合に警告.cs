@@ -1,7 +1,5 @@
 using System.Reflection;
-using SignalHandler.Application.Installer;
-using SignalHandler.Application.Interface;
-using SignalHandler.Application.Signal;
+using SignalHandler.Installer;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
