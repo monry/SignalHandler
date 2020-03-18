@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using SignalHandler.Domain.Implement.UseCase;
 using JetBrains.Annotations;
-using SignalHandler.Application.Interface;
-using SignalHandler.Application.Master;
+using SignalHandler.UseCase;
 using Zenject;
 
-namespace SignalHandler.Application.Installer
+namespace SignalHandler.Installer
 {
     [UsedImplicitly]
     public class SignalHandlerInstaller<TSignal> : Installer<object, CacheType, SignalMissingHandlerResponses, SignalHandlerInstaller<TSignal>>
@@ -89,6 +87,19 @@ namespace SignalHandler.Application.Installer
             }
 
             DeclarationMap[container].Add(typeof(TSignal));
+        }
+    }
+}
+
+namespace SignalHandler.Application.Installer
+{
+    [UsedImplicitly]
+    [Obsolete("Use SignalHandler.Installer.SignalHandlerInstaller<TSignal> instead of this interface.")]
+    public class SignalHandlerInstaller<TSignal> : SignalHandler.Installer.SignalHandlerInstaller<TSignal>
+        where TSignal : class, ISignal
+    {
+        internal SignalHandlerInstaller(object identifier, CacheType cacheType, SignalMissingHandlerResponses signalMissingHandlerResponses) : base(identifier, cacheType, signalMissingHandlerResponses)
+        {
         }
     }
 }

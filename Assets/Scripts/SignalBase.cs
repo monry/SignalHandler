@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using SignalHandler.Application.Interface;
 
-namespace SignalHandler.Application.Signal
+namespace SignalHandler
 {
     [UsedImplicitly]
     public abstract class SignalBase<TSignal> : ISignal, IEquatable<SignalBase<TSignal>>
@@ -155,5 +154,22 @@ namespace SignalHandler.Application.Signal
         {
             return !Equals(left, right);
         }
+    }
+}
+
+namespace SignalHandler.Application.Signal
+{
+    [UsedImplicitly]
+    [Obsolete("Use SignalHandler.SignalBase<TSignal> instead of this class.")]
+    public abstract class SignalBase<TSignal> : SignalHandler.SignalBase<TSignal>
+        where TSignal : SignalBase<TSignal>, new()
+    {
+    }
+
+    [UsedImplicitly]
+    [Obsolete("Use SignalHandler.SignalBase<TSignal, TParameter> instead of this class.")]
+    public abstract class SignalBase<TSignal, TParameter> : SignalHandler.SignalBase<TSignal, TParameter>
+        where TSignal : SignalBase<TSignal, TParameter>, new()
+    {
     }
 }
