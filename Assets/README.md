@@ -42,7 +42,7 @@ Note: `upm` command is provided by [this repository](https://github.com/upm-pack
 #### Type based signal
 
 ```csharp
-using SignalHandler.Application.Signal;
+using SignalHandler;
 
 public class FooSignal : SignalBase<FooSignal>
 {
@@ -52,7 +52,7 @@ public class FooSignal : SignalBase<FooSignal>
 #### Type based signal with parameters
 
 ```csharp
-using SignalHandler.Application.Signal;
+using SignalHandler;
 
 public struct SomeParameter
 {
@@ -79,7 +79,7 @@ Use `ScriptableObjectSignalBase<TSignal>` or `ScriptableObjectSignalBase<TSignal
 
 ```csharp
 using Zenject;
-using SignalHandler.Application.Installer; // provides extension methods
+using SignalHandler.Installer; // provides extension methods
 
 public class SomeInstaller : MonoInstaller<SomeInstaller>
 {
@@ -94,7 +94,7 @@ public class SomeInstaller : MonoInstaller<SomeInstaller>
 ### Publish signals
 
 ```csharp
-using SignalHandler.Application.Interface;
+using SignalHandler;
 using Zenject;
 using UnityEngine;
 
@@ -116,7 +116,7 @@ public class MyPublisherMonoBehaviour : MonoBehaviour
 ### Receive signals
 
 ```csharp
-using SignalHandler.Application.Interface;
+using SignalHandler;
 using Zenject;
 using UnityEngine;
 using UniRx;
