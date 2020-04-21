@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.2] - 2020-04-21
+
+Fix dependencies
+
+
+
 ## [1.3.1] - 2020-04-21
 
 Tweak dependencies and open with Unity 2019.3.10f1
