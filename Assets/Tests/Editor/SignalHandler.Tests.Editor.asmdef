@@ -1,5 +1,6 @@
 {
     "name": "SignalHandler.Tests.Editor",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
@@ -16,7 +17,7 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Zenject-usage.dll",
-        "Zenject-TestFramework.dll",
+        "Zenject-TestFramework-usage.dll",
         "NSubstitute.dll"
     ],
     "autoReferenced": false,
